@@ -31,7 +31,7 @@ namespace joke
             Console.ReadKey();
         }
 
-        async Task<Joke> GetJokeAsync(string endPointUrl)
+        private async Task<Joke> GetJokeAsync(string endPointUrl)
         {
             Joke joke;
             HttpResponseMessage response = await client.GetAsync(endPointUrl);
