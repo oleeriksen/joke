@@ -3,27 +3,30 @@ using Newtonsoft.Json;
 
 namespace joke
 {
-	public class JokeApp
-	{
-		HttpClient client = new HttpClient();
+    public class JokeApp
+    {
+        HttpClient client = new HttpClient();
 
         string jokeUrl = "https://official-joke-api.appspot.com/random_joke";
 
 
         public JokeApp()
-		{}
+        { }
 
-		public void Run() {
+        public void Run()
+        {
             Console.Write("Enter how many jokes you want:");
             int amount = int.Parse(Console.ReadLine());
 
-            Task<Joke> taskGettingAJoke = GetJokeAsync(jokeUrl);
-            var j = taskGettingAJoke.Result;
 
-            Console.WriteLine($"Type: {j.type}");
-            Console.WriteLine($"Setup: {j.setup}");
-            Console.WriteLine($"punchline: {j.punchline}");
+            Task<Joke> aTaskGettingAJoke = GetJokeAsync(jokeUrl);
+            Joke aJoke = aTaskGettingAJoke.Result;
+
+            Console.WriteLine($"Type: {aJoke.Type}");
+            Console.WriteLine($"Setup: {aJoke.Setup}");
+            Console.WriteLine($"punchline: {aJoke.Punchline}");
             Console.WriteLine();
+
 
             Console.ReadKey();
         }
@@ -37,7 +40,12 @@ namespace joke
                 joke = await response.Content.ReadAsAsync<Joke>();
             }
             else
-                joke = new Joke();
+                joke = new Joke
+                {
+                    Type = "Error",
+                    Setup = "",
+                    Punchline = response.ReasonPhrase ?? ""
+                };
             return joke;
         }
     }
