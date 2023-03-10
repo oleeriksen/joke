@@ -17,17 +17,26 @@ namespace joke
         public void Run()
         {
             Console.Write("Enter how many jokes you want:");
+            List<Task<Joke>> tasks = new();
+
             int amount = int.Parse(Console.ReadLine());
 
+            for (int i = 0; i < amount; i++)
+            {
+                Task<Joke> aTaskGettingAJoke = GetJokeAsync(jokeUrl);
+                tasks.Add(aTaskGettingAJoke);
+            }
 
-            Task<Joke> aTaskGettingAJoke = GetJokeAsync(jokeUrl);
-            Joke aJoke = aTaskGettingAJoke.Result;
+            foreach (Task<Joke> t in tasks)
+            {
+                Joke aJoke = t.Result;
 
-            Console.WriteLine($"Type: {aJoke.Type}");
-            Console.WriteLine($"Setup: {aJoke.Setup}");
-            Console.WriteLine($"punchline: {aJoke.Punchline}");
-            Console.WriteLine();
-
+                Console.WriteLine($"Type: {aJoke.Type}");
+                Console.WriteLine($"Setup: {aJoke.Setup}");
+                Console.WriteLine($"punchline: {aJoke.Punchline}");
+                Console.WriteLine();
+            }
+            
 
             Console.ReadKey();
         }
