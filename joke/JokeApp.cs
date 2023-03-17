@@ -13,8 +13,36 @@ namespace joke
         public JokeApp()
         {}
 
-
         public void Run()
+        {
+            Console.Write("Enter how many jokes you want:");
+            int amount = int.Parse(Console.ReadLine());
+            List<Task<Joke>> mJokes = new();
+
+            for (int i = 0; i < amount; i++)
+            {
+                var aTaskGettingAJoke = GetJokeAsync(jokeUrl);
+                mJokes.Add(aTaskGettingAJoke);
+            }
+
+            Console.WriteLine("Lavet alle task, venter nu...");
+            Task.WaitAll(mJokes.ToArray());
+            Console.WriteLine("Nu er ALLE færdige");
+
+            foreach (var aTask in mJokes)
+            {
+                Joke aJoke = aTask.Result;
+
+                Console.WriteLine($"Type: {aJoke.Type}");
+                Console.WriteLine($"Setup: {aJoke.Setup}");
+                Console.WriteLine($"punchline: {aJoke.Punchline}");
+                Console.WriteLine();
+            }
+            Console.ReadKey();
+        }
+
+
+        public void RunBetter()
         {
             Console.Write("Enter how many jokes you want:");
             List<Task<Joke>> tasks = new();
