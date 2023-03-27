@@ -7,61 +7,35 @@ namespace joke
     {
         HttpClient client = new HttpClient();
 
-        string jokeUrl = "https://official-joke-api.appspot.com/random_joke";
+        string jokeUrl = "https://official-joke-api.appspot.com/jokes/programming/random";
 
 
         public JokeApp()
         {}
 
+       
+
+
         public void Run()
         {
             Console.Write("Enter how many jokes you want:");
-            int amount = int.Parse(Console.ReadLine());
-            List<Task<Joke>> mJokes = new();
-
-            for (int i = 0; i < amount; i++)
-            {
-                var aTaskGettingAJoke = GetJokeAsync(jokeUrl);
-                mJokes.Add(aTaskGettingAJoke);
-            }
-
-            Console.WriteLine("Lavet alle task, venter nu...");
-            Task.WaitAll(mJokes.ToArray());
-            Console.WriteLine("Nu er ALLE færdige");
-
-            foreach (var aTask in mJokes)
-            {
-                Joke aJoke = aTask.Result;
-
-                Console.WriteLine($"Type: {aJoke.Type}");
-                Console.WriteLine($"Setup: {aJoke.Setup}");
-                Console.WriteLine($"punchline: {aJoke.Punchline}");
-                Console.WriteLine();
-            }
-            Console.ReadKey();
-        }
-
-
-        public void RunBetter()
-        {
-            Console.Write("Enter how many jokes you want:");
-            List<Task<Joke>> tasks = new();
+            List<Task<Joke[]>> tasks = new();
 
             int amount = int.Parse(Console.ReadLine());
 
             for (int i = 0; i < amount; i++)
             {
-                Task<Joke> aTaskGettingAJoke = GetJokeAsync(jokeUrl);
+                Task<Joke[]> aTaskGettingAJoke = GetJokeAsync(jokeUrl);
                 tasks.Add(aTaskGettingAJoke);
             }
 
-            foreach (Task<Joke> t in tasks)
+            foreach (Task<Joke[]> t in tasks)
             {
-                Joke aJoke = t.Result;
+                Joke[] aJoke = t.Result;
 
-                Console.WriteLine($"Type: {aJoke.Type}");
-                Console.WriteLine($"Setup: {aJoke.Setup}");
-                Console.WriteLine($"punchline: {aJoke.Punchline}");
+                Console.WriteLine($"Type: {aJoke[0].Type}");
+                Console.WriteLine($"Setup: {aJoke[0].Setup}");
+                Console.WriteLine($"punchline: {aJoke[0].Punchline}");
                 Console.WriteLine();
             }
             
@@ -69,21 +43,21 @@ namespace joke
             Console.ReadKey();
         }
 
-        private async Task<Joke> GetJokeAsync(string endPointUrl)
+        private async Task<Joke[]> GetJokeAsync(string endPointUrl)
         {
-            Joke joke;
+            Joke[] joke;
             HttpResponseMessage response = await client.GetAsync(endPointUrl);
             if (response.IsSuccessStatusCode)
             {
-                joke = await response.Content.ReadAsAsync<Joke>();
+                joke = await response.Content.ReadAsAsync<Joke[]>();
             }
             else
-                joke = new Joke
+                joke = new Joke[] {new Joke
                 {
                     Type = "Error",
                     Setup = "",
                     Punchline = response.ReasonPhrase ?? ""
-                };
+                } };
             return joke;
         }
     }
